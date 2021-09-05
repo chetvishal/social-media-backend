@@ -9,7 +9,6 @@ router.route('/')
         try {
             const { username, password } = req.body.user;
             const userFound = await User.findOne({ username: username })
-            console.log("username: ", username, "password: ", password)
             if (userFound) {
                 userFound.comparePassword(password, (err, isMatch) => {
                     const accessToken = jwt.sign({ userId: userFound._id }, secret, { expiresIn: '60 days' })

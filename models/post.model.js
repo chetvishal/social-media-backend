@@ -18,10 +18,7 @@ const postSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "User"
     },
-    // name: {
-    //     type: String,
-    //     required: "Username is required"
-    // },
+    
     username: {
         type: String,
         required: "username is required"
@@ -36,18 +33,7 @@ const postSchema = new Schema({
             ref: "User"
         }
     ],
-    comments: [commentSchema
-        // {
-        //     commentText: {
-        //         type: String,
-        //         minLength: [1, "Comment cannot be empty"]
-        //     },
-        //     commentUserId: {
-        //         type: Schema.Types.ObjectId,
-        //         ref: "User"
-        //     }
-        // }
-    ],
+    comments: [commentSchema],
 },
     {
         timestamps: true,

@@ -6,10 +6,6 @@ const getPostById = async (req, res, next, postId) => {
             .populate({ path: 'userId', model: "User", select: ["_id", "name", "username", "avatarUrl"] })
             .populate({ path: 'comments.commentUserId', model: "User", select: ["_id", "name", "username", "avatarUrl"] })
         
-        
-
-        // let postData = await post.populate({ path: 'userId', model: "User", select: ["_id", "name", "username", "avatarUrl"] }).execPopulate();
-        // console.log("postData: ", postData)
         req.post = post;
         next();
     } catch (error) {

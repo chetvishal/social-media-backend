@@ -9,7 +9,7 @@ const AuthVerification = (req, res, next) => {
         res.user = decoded;
         return next();
     } catch (error) {
-        console.log("auth error: ", error)
+        console.log("auth error: ", error.message)
         return res.status(401).json({ message: "Unauthorised access, please add right token" })
     }
 }

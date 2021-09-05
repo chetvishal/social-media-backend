@@ -21,12 +21,7 @@ const NotificationItemSchema = new Schema(
 );
 
 const NotificationSchema = new Schema({
-    // userId: {
-    //     type: Schema.Types.ObjectId,
-    //     ref: "User",
-    //     unique: true
-    // },
-    // notificationList: [NotificationItemSchema]
+  
     notificationType: {
         type: String,
         required: true,
@@ -48,35 +43,4 @@ const Notification = mongoose.model("Notification", NotificationSchema);
 module.exports = { Notification };
 
 
-// const createNotificationsForNewPost = async (postId, userId) => {
-//     try {
-//       const newNotification = {
-//         type: "New Post",
-//         postId,
-//         originUser: userId,
-//       };
-//       const { followers } = await User.findById(userId).select("followers");
-//       const notifications = followers.map((followerId) => ({
-//         ...newNotification,
-//         destinationUser: followerId,
-//       }));
-//       Notification.insertMany(notifications);
-//     } catch (error) {
-//       return new Error("New Post notification failed!");
-//     }
-//   };
 
-
-// const createNotificationForLike = async (post, userId) => {
-//     try {
-//       const newNotification = {
-//         type: "Like",
-//         postId: post._id,
-//         originUser: userId,
-//         destinationUser: post.userId,
-//       };
-//       Notification.create(newNotification);
-//     } catch (error) {
-//       return new Error("Like notification failed!");
-//     }
-//   };

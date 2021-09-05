@@ -2,6 +2,7 @@ const User = require("../models/user.model");
 const { Notification } = require("../models/notification.model");
 const { Post } = require("../models/post.model");
 const { extend } = require("lodash");
+const { cloudinary } = require('../utils/cloudinary');
 
 const getUserDetails = async (req, res, next) => {
     try {
@@ -54,7 +55,6 @@ const createNotificationForFollow = async (userId, toFollowUser) => {
             originUser: userId,
             notificationFor: toFollowUser,
         };
-        // Notification.create(followNotification);
         const saveItem = new Notification(followNotification);
         await saveItem.save()
     } catch (error) {
@@ -80,11 +80,7 @@ const followUser = async (req, res, next) => {
         let saveToFollowUser = await toFollowUser.save()
         let populateFollowers = await saveToFollowUser.populate([{ path: 'following', model: "User", select: ["_id", "name", "username", "avatarUrl"] }])
             .populate([{ path: 'followers', model: "User", select: ["_id", "name", "username", "avatarUrl"] }]).execPopulate()
-        // await toFollowUser.save();
-        // saveUser = await saveUser
-        //     .populate("following")
-        //     .populate("followers")
-        //     .execPopulate();
+        
         res.status(201).json({ success: true, userData: populateFollowers });
         createNotificationForFollow(userId, toFollowUserId);
     } catch (error) {
@@ -110,13 +106,8 @@ const unFollowUser = async (req, res, next) => {
 
         let populateUserData = await saveToUnFollowUser.populate([{ path: 'following', model: "User", select: ["_id", "name", "username", "avatarUrl"] }])
             .populate([{ path: 'followers', model: "User", select: ["_id", "name", "username", "avatarUrl"] }]).execPopulate()
-        // await toUnFollowUser.save();
-        // saveUser = await saveUser
-        //     .populate("following")
-        //     .populate("followers")
-        //     .execPopulate();
+        
         res.status(201).json({ success: true, userData: populateUserData });
-        // createNotificationForFollow(userId, toFollowUserId);
     } catch (error) {
         return res.status(500).json({ success: false, message: "failed to follow user" })
     }
@@ -141,11 +132,34 @@ const getUserDetailsByUsername = async (req, res, next) => {
     }
 }
 
+const uploadProfilePic = async (req, res, next) => {
+    try {
+        const { userId, encodedImage } = req.body;
+        let user = await User.findById(userId)
+        if (!user) {
+            return res
+                .status(401)
+                .json({ success: false, errorMessage: "User doesn't exist!" });
+        }
+        const uploadResponse = await cloudinary.uploader.upload(encodedImage, {
+            upload_preset: 'profile_pic',
+        });
+        user = extend(user, { avatarUrl: uploadResponse.url });
+        await user.save();
+
+        res.status(201).json({ success: true, message: "successfully updated profile picture", pictureUrl: uploadResponse.url });
+    } catch (error) {
+        console.log("failed to upload profile picture: ", error)
+        return res.status(500).json({ success: false, message: "failed to upload profile picture", error: error.message })
+    }
+}
+
 module.exports = {
     getUserDetails,
     updateUserDetails,
     getFollowLists,
     followUser,
     unFollowUser,
-    getUserDetailsByUsername
+    getUserDetailsByUsername,
+    uploadProfilePic
 };

@@ -5,8 +5,6 @@ const {
     updatePost,
     getPost,
     newComment,
-    // removePost,
-    // getUsersWhoLikedPost,
     likePost,
     getPostByUserName,
     getUserFeed,
@@ -17,8 +15,7 @@ const router = express.Router();
 const { AuthVerification } = require("../middlewares/AuthVerification");
 const { getPostById } = require("../middlewares/paramHandler");
 
-// router.use(AuthVerification)
-
+router.use(AuthVerification)
 router.route("/")
     .get(getAllUserPosts)
     .post(addNewPost);
@@ -40,10 +37,8 @@ router.param("postId", getPostById);
 router.route("/:postId")
     .get(getPost)
     .post(updatePost)
-//     .delete(removePost);
 
 router.route("/:postId/likes")
-    // .get(getUsersWhoLikedPost)
     .post(likePost);
 
 router.route('/:postId/comment')
