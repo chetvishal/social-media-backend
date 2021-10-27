@@ -17,8 +17,10 @@ const { getPostById } = require("../middlewares/paramHandler");
 
 router.use(AuthVerification)
 router.route("/")
-    .get(getAllUserPosts)
     .post(addNewPost);
+
+router.route("/getposts/:userId")
+    .get(getAllUserPosts)
 
 router.route('/getallposts')
     .get(getAllPosts)

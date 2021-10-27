@@ -62,7 +62,7 @@ const getUserFeed = async (req, res, next) => {
 
 const getAllUserPosts = async (req, res, next) => {
     try {
-        const { userId } = req.body;
+        const { userId } = req.params;
         const posts = await Post.find({ userId })
             .sort({ createdAt: "desc" })
             .populate([{ path: 'userId', model: "User", select: ["_id", "name", "username", "avatarUrl"] }])

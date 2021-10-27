@@ -1,5 +1,7 @@
 const { Notification } = require("../models/notification.model");
 
+const User = require("../models/user.model");
+
 const getUserNotifications = async (req, res, next) => {
     try {
         const { userId } = req.params;
@@ -53,7 +55,8 @@ const createNotificationsForNewPost = async (postId, userId) => {
         Notification.insertMany(notifications);
 
     } catch (error) {
-        console.log("error creating notification", error.message)
+
+        console.log("error creating notification", error, postId, userId)
     }
 };
 
