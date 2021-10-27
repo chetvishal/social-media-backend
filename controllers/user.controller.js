@@ -1,5 +1,4 @@
 const User = require("../models/user.model");
-const { Notification } = require("../models/notification.model");
 const { createNotificationForFollow } = require('./notification.controller');
 const { Post } = require("../models/post.model");
 const { extend } = require("lodash");

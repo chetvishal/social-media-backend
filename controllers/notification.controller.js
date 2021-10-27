@@ -8,7 +8,7 @@ const getUserNotifications = async (req, res, next) => {
         })
             .populate([{ path: 'originUser', model: "User", select: ["_id", "name", "username", "avatarUrl"] }])
             .sort("-createdAt")
-      
+
         if (!notifications.length)
             return res.status(200).json({ success: true, notifications: [] });
 
@@ -51,7 +51,7 @@ const createNotificationsForNewPost = async (postId, userId) => {
             notificationFor: followerId,
         }));
         Notification.insertMany(notifications);
-        
+
     } catch (error) {
         console.log("error creating notification", error.message)
     }
@@ -59,14 +59,16 @@ const createNotificationsForNewPost = async (postId, userId) => {
 
 const createNotificationForLike = async (post, userId) => {
     try {
-        const newNotification = {
-            notificationType: "Like",
-            postId: post._id,
-            originUser: userId,
-            notificationFor: post.userId,
-        };
-        const saveitem = new Notification(newNotification);
-        await saveitem.save()
+        if (userId.toString() !== post.userId.toString()) {
+            const newNotification = {
+                notificationType: "Like",
+                postId: post._id,
+                originUser: userId,
+                notificationFor: post.userId,
+            };
+            const saveitem = new Notification(newNotification);
+            await saveitem.save()
+        }
     } catch (error) {
         return new Error("Like notification failed!");
     }
@@ -74,14 +76,17 @@ const createNotificationForLike = async (post, userId) => {
 
 const createNotificationForComment = async (post, userId) => {
     try {
-        const newNotification = {
-            notificationType: "Comment",
-            postId: post._id,
-            originUser: userId,
-            notificationFor: post.userId,
-        };
-        const saveitem = new Notification(newNotification);
-        await saveitem.save()
+        if (userId.toString() !== post.userId.toString()) {
+            console.log("it ran", userId !== post.userId, userId, post.userId)
+            const newNotification = {
+                notificationType: "Comment",
+                postId: post._id,
+                originUser: userId,
+                notificationFor: post.userId,
+            };
+            const saveitem = new Notification(newNotification);
+            await saveitem.save()
+        }
     } catch (error) {
         return new Error("failed to create notification for comment");
     }

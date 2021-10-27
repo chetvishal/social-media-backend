@@ -1,7 +1,6 @@
 const { Post } = require("../models/post.model");
 const { extend } = require("lodash");
 const User = require("../models/user.model");
-const { Notification } = require("../models/notification.model");
 const { createNotificationsForNewPost, createNotificationForLike, createNotificationForComment } = require('./notification.controller');
 var mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
