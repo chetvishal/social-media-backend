@@ -1,5 +1,6 @@
 const User = require("../models/user.model");
 const { Notification } = require("../models/notification.model");
+const { createNotificationForFollow } = require('./notification.controller');
 const { Post } = require("../models/post.model");
 const { extend } = require("lodash");
 const { cloudinary } = require('../utils/cloudinary');
@@ -48,19 +49,7 @@ const getFollowLists = async (req, res, next) => {
     }
 };
 
-const createNotificationForFollow = async (userId, toFollowUser) => {
-    try {
-        const followNotification = {
-            notificationType: "Follow",
-            originUser: userId,
-            notificationFor: toFollowUser,
-        };
-        const saveItem = new Notification(followNotification);
-        await saveItem.save()
-    } catch (error) {
-        console.log("failed to create follow notification", error.message)
-    }
-};
+
 
 const followUser = async (req, res, next) => {
     try {
@@ -80,7 +69,7 @@ const followUser = async (req, res, next) => {
         let saveToFollowUser = await toFollowUser.save()
         let populateFollowers = await saveToFollowUser.populate([{ path: 'following', model: "User", select: ["_id", "name", "username", "avatarUrl"] }])
             .populate([{ path: 'followers', model: "User", select: ["_id", "name", "username", "avatarUrl"] }]).execPopulate()
-        
+
         res.status(201).json({ success: true, userData: populateFollowers });
         createNotificationForFollow(userId, toFollowUserId);
     } catch (error) {
@@ -106,7 +95,7 @@ const unFollowUser = async (req, res, next) => {
 
         let populateUserData = await saveToUnFollowUser.populate([{ path: 'following', model: "User", select: ["_id", "name", "username", "avatarUrl"] }])
             .populate([{ path: 'followers', model: "User", select: ["_id", "name", "username", "avatarUrl"] }]).execPopulate()
-        
+
         res.status(201).json({ success: true, userData: populateUserData });
     } catch (error) {
         return res.status(500).json({ success: false, message: "failed to follow user" })

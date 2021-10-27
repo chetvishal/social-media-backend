@@ -2,6 +2,7 @@ const { Post } = require("../models/post.model");
 const { extend } = require("lodash");
 const User = require("../models/user.model");
 const { Notification } = require("../models/notification.model");
+const { createNotificationsForNewPost, createNotificationForLike, createNotificationForComment } = require('./notification.controller');
 var mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 
@@ -73,26 +74,7 @@ const getAllUserPosts = async (req, res, next) => {
     }
 };
 
-const createNotificationsForNewPost = async (postId, userId) => {
-    try {
 
-        const { followers } = await User.findById(userId).select("followers");
-
-        const newNotification = {
-            notificationType: "Post",
-            postId,
-            originUser: userId,
-        };
-        const notifications = followers.map((followerId) => ({
-            ...newNotification,
-            notificationFor: followerId,
-        }));
-        Notification.insertMany(notifications);
-        
-    } catch (error) {
-        console.log("error creating notification", error.message)
-    }
-};
 
 const addNewPost = async (req, res, next) => {
     try {
@@ -112,7 +94,7 @@ const addNewPost = async (req, res, next) => {
 const getPost = async (req, res, next) => {
     try {
         let { post } = req;
-        
+
         return res.status(200).json({ success: true, post: post });
     } catch (error) {
         res.status(500).json({ success: false, message: "failed to fetch data", errMessage: error.message })
@@ -170,21 +152,6 @@ const likePost = async (req, res, next) => {
     }
 };
 
-const createNotificationForLike = async (post, userId) => {
-    try {
-        const newNotification = {
-            notificationType: "Like",
-            postId: post._id,
-            originUser: userId,
-            notificationFor: post.userId,
-        };
-        const saveitem = new Notification(newNotification);
-        await saveitem.save()
-    } catch (error) {
-        return new Error("Like notification failed!");
-    }
-};
-
 const newComment = async (req, res, next) => {
     try {
         const { commentText, commentUserId } = req.body;
@@ -200,20 +167,7 @@ const newComment = async (req, res, next) => {
     }
 }
 
-const createNotificationForComment = async (post, userId) => {
-    try {
-        const newNotification = {
-            notificationType: "Comment",
-            postId: post._id,
-            originUser: userId,
-            notificationFor: post.userId,
-        };
-        const saveitem = new Notification(newNotification);
-        await saveitem.save()
-    } catch (error) {
-        return new Error("failed to create notification for comment");
-    }
-}
+
 const getAllPosts = async (req, res, next) => {
     try {
 
