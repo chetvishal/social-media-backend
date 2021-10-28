@@ -6,7 +6,8 @@ const {
     followUser,
     unFollowUser,
     getUserDetailsByUsername,
-    uploadProfilePic
+    uploadProfilePic,
+    suggestUsersToFollow
 } = require("../controllers/user.controller");
 const router = express.Router();
 const { AuthVerification } = require("../middlewares/AuthVerification");
@@ -30,5 +31,8 @@ router.route("/user/unfollow")
 
 router.route("/profilepic")
     .post(uploadProfilePic);
+
+router.route('/suggestions/:userId')
+    .get(suggestUsersToFollow)
 
 module.exports = router;

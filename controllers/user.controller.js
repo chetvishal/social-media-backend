@@ -142,6 +142,18 @@ const uploadProfilePic = async (req, res, next) => {
     }
 }
 
+const suggestUsersToFollow = async (req, res, next) => {
+    try {
+        const { userId } = req.params;
+        let users = await User.find({})
+        let suggestions = users.slice(0, 5).filter(i => i._id !== userId)
+        return res.status(201).json({ success: true, suggestions })
+    } catch (error) {
+        console.log("failed to upload profile picture: ", error)
+        return res.status(500).json({ success: false, message: "failed to upload profile picture", error: error.message })
+    }
+}
+
 module.exports = {
     getUserDetails,
     updateUserDetails,
@@ -149,5 +161,6 @@ module.exports = {
     followUser,
     unFollowUser,
     getUserDetailsByUsername,
-    uploadProfilePic
+    uploadProfilePic,
+    suggestUsersToFollow
 };
